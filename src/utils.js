@@ -6,8 +6,6 @@ export const generateGrid = (gridSize, mines) => {
         for (let j = 0; j < gridSize; j++) {
             row.push({
                 isMine: false,
-                // shown: false,
-                // marked: false
             })
         }
         grid.push(row)
@@ -157,8 +155,8 @@ export const clearField = (minesboard, size, x, y) => {
     return newBoard
 }
 
-export const markField = (minesboard, size, x, y) => {
-    return minesboard.map((row, rid) => {
+export const markField = (minesboard, marked, actualMark, x, y) => {
+    return [minesboard.map((row, rid) => {
         if(rid !== x) {
             return row;
         }
@@ -166,10 +164,37 @@ export const markField = (minesboard, size, x, y) => {
             if(cid !== y) {
                 return cell
             }
+            cell.isMarked ? marked-- : marked++
+            if(cell.isMine) {
+                if(cell.isMarked) {
+                    actualMark--
+                }
+                actualMark++
+            }
             return {
                 ...cell,
                 isMarked: !cell.isMarked
             }
         })
-    })
+    }), marked, actualMark]
+}
+
+export const getMinesCount = size => Math.floor(size * size * 0.15) 
+
+
+export const formatTime = time => {
+    const minutes = Math.floor(time / 60)
+    const seconds = time % 60
+    let minutesText = ''
+    let secondsText = ''
+    if(minutes) {
+        minutesText = minutes === 1 ? '1 Minute' : `${minutes} Minutes`
+        minutesText += ' and '
+    }
+
+    if(seconds) {
+        secondsText = seconds === 1 ? '1 Second': `${seconds} Seconds`
+    }
+
+    return minutesText + secondsText
 }

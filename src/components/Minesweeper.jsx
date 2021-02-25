@@ -1,14 +1,16 @@
 import { useContext, useEffect } from "react"
-import { Button, ButtonGroup, makeStyles, Typography } from '@material-ui/core'
+import { Button, ButtonGroup, makeStyles, Typography, Dialog, DialogTitle, DialogActions, DialogContent, DialogContentText } from '@material-ui/core'
 import context from "../context"
 import MinesBoard from "./MinesBoard"
+import { formatTime } from "../utils"
 
 const useStyles = makeStyles({
     minesweeper: {
         display: 'grid',
         width: 800,
         margin: '0 auto',
-        gridTemplateColumns: "repeat(3, auto)",
+        gridTemplateColumns: "repeat(2, auto) 200px",
+        gridTemplateRows: "auto auto 70px auto",
         gap: 20,
         textAlign: 'center',
         gridTemplateAreas:`
@@ -52,32 +54,59 @@ const Minesweeper = () => {
     const { incrementSize, decrementSize, initializeMinesField } = actions
     useEffect(initializeMinesField, [initializeMinesField])
     const classes = useStyles()
-    const { size } = state
+    const { size, mines, marked, time, won, gameOver } = state
     return (
-        <div className={classes.minesweeper}>
-            <Typography className={classes.header} variant="h3">Minesweeper</Typography>
-            <ButtonGroup 
-                fullWidth
-                className={classes.options} 
-                variant="contained" 
-                color="primary" 
-            >
-                <Button onClick={incrementSize}>+</Button>
-                <Button >{size} X {size}</Button>
-                <Button onClick={decrementSize}>-</Button>
-            </ButtonGroup>
+        <>
+            <Dialog open={gameOver}>
+                <DialogTitle>Game Over</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                    Oops, You stepped on a mine. Try again.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button variant="outlined" color="primary" onClick={initializeMinesField}>Try Again</Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog open={won}>
+                <DialogTitle>You Won</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                    Well Done. You won the game in {formatTime(time)}.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button variant="outlined" color="primary" onClick={initializeMinesField}>Restart</Button>
+                </DialogActions>
+            </Dialog>
+            <div className={classes.minesweeper}>
+                <Typography className={classes.header} variant="h3">Minesweeper</Typography>
+                <ButtonGroup
+                    disableElevation 
+                    fullWidth
+                    className={classes.options} 
+                    variant="contained" 
+                    color="primary" 
+                >
+                    <Button onClick={incrementSize}>+</Button>
+                    <Button >{size} X {size}</Button>
+                    <Button onClick={decrementSize}>-</Button>
+                </ButtonGroup>
 
-            <Button 
-                fullWidth
-                className={classes.restart} 
-                variant="outlined" 
-                color="primary" 
-                onClick={initializeMinesField}>Restart</Button>
-            <Typography className={classes.total}>Total Mines: </Typography>
-            <Typography className={classes.available}>Available Mines</Typography>
-            <Typography className={classes.time}></Typography>
-            <MinesBoard/>
-        </div>
+                <Button 
+                    fullWidth
+                    className={classes.restart} 
+                    variant="outlined" 
+                    color="primary" 
+                    onClick={initializeMinesField}>Restart</Button>
+                <Typography className={classes.total}>Total Mines: {mines}</Typography>
+                <Typography className={classes.available}>Available Mines: {mines - marked}</Typography>
+                <Typography className={classes.time}>
+                    {time ? formatTime(time) : 'Click on tile start timer'}
+                </Typography>
+                <MinesBoard/>
+            </div>
+        </>
     )
 }
 

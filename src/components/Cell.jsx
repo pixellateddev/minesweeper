@@ -1,9 +1,8 @@
-import { makeStyles } from "@material-ui/styles"
+import { makeStyles } from "@material-ui/core"
 import { useContext } from "react"
 import context from "../context"
 
 const getColor = ({cell, isGameOver}) => {
-    console.log(isGameOver)
     if(cell.isMine && isGameOver) {
         return '#ff9595'
     }
@@ -43,9 +42,6 @@ const Cell = ({cell, clearField, markField}) => {
         }
         if(cell.isMarked) {
             return '?'
-        }
-        if(cell.value === '*') {
-            return '.'
         }
         if(cell.value === 0) {
             return ''

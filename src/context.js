@@ -1,35 +1,45 @@
-import { createContext, useReducer, useCallback } from 'react'
-import { generateGrid, isMine, clearField, markField } from './utils';
+import { createContext, useReducer, useCallback, useEffect } from 'react'
+import { generateGrid, isMine, clearField, markField, getMinesCount } from './utils';
 
 
-const mines=60;
 
 const context = createContext()
 
 const initialState = {
     minesboard: [],
     size: 20,
+    marked: 0,
+    time: 0,
+    won: false,
+    gameOver: false,
+    actualMarked: 0,
+    mines: getMinesCount(20),
 }
 
 const reducer = (state, action) => {
     switch(action.type) {
         case "initialize":
+            clearInterval(state.timer)
             return {
                 ...initialState,
                 size: state.size,
-                minesboard: generateGrid(state.size, mines)
+                mines: getMinesCount(state.size),
+                minesboard: generateGrid(state.size, getMinesCount(state.size)),
+
             }
         case "incrementSize":
             return {
                 ...state,
                 size: state.size + 1,
-                minesboard: generateGrid(state.size + 1, mines)
+                mines: getMinesCount(state.size + 1),
+                minesboard: generateGrid(state.size + 1, getMinesCount(state.size + 1))
             }
         case "decrementSize":
             return {
                 ...state,
                 size: state.size - 1,
-                minesboard: generateGrid(state.size - 1, mines)
+                mines: getMinesCount(state.size - 1),
+                minesboard: generateGrid(state.size - 1, getMinesCount(state.size - 1))
             }
 
         case "updateBoard":
@@ -38,16 +48,44 @@ const reducer = (state, action) => {
                 minesboard: action.minesboard
             }
 
+        case "updateMark":
+            return {
+                ...state,
+                marked: action.marked,
+                actualMarked: action.actualMarked
+            }
+
         case 'gameOver':
+            clearInterval(state.timer)
             return {
                 ...state,
                 isGameOver: true
+            }
+        
+        case 'won':
+            clearInterval(state.timer)
+            return {
+                ...state,
+                won: true
             }
 
         case 'started':
             return {
                 ...state,
                 started: true
+            }
+
+        case 'setTimer': 
+            return {
+                ...state,
+                timer: action.timer
+            }
+        
+
+        case 'tick': 
+            return {
+                ...state,
+                time: state.time + 1
             }
 
         default:
@@ -62,7 +100,7 @@ export const ContextProvider = ({children}) => {
 
 
     const [state, dispatch] = useReducer(reducer, initialState)
-    const { minesboard, size, started, isGameOver } = state
+    const { minesboard, size, started, isGameOver, marked, actualMarked, mines, won } = state
     const actions = {
         incrementSize: () => dispatch({type: 'incrementSize'}),
 
@@ -71,17 +109,14 @@ export const ContextProvider = ({children}) => {
         initializeMinesField: useCallback(() => dispatch({type: 'initialize'}), []),
 
         clearField: (x, y) => {
-            if(minesboard[x][y].shown || isGameOver) {
+            if(minesboard[x][y].shown || isGameOver || won) {
                 return;
             }
             if(!started) {
-                dispatch({
-                    action: 'started'
-                })
+                dispatch({type: 'started'})
             }
             if(isMine(minesboard, size, x, y)) {
                 dispatch({type: 'gameOver'})
-                alert('You have stepped on a mine')
                 return;
             }
 
@@ -92,24 +127,48 @@ export const ContextProvider = ({children}) => {
         },
 
         markField: (x, y) => {
-            if(minesboard[x][y].shown || isGameOver) {
+            if(minesboard[x][y].shown || isGameOver || won) {
                 return;
             }
+            if(!started) {
+                dispatch({type: 'started'})
+            }
+            const [newBoard, newMarked, newActualMarked] = markField(minesboard, marked, actualMarked, x, y)
             dispatch({
                 type: 'updateBoard',
-                minesboard: markField(minesboard, size, x, y)
+                minesboard: newBoard
+            })
+
+            dispatch({
+                type: 'updateMark',
+                marked: newMarked,
+                actualMarked: newActualMarked
             })
         }
-
-
     }
 
+    useEffect(() => {
+        if(actualMarked === mines) {
+            dispatch({type: 'won'})
+        }
+    }, [actualMarked, mines])
+
+    useEffect(() => {
+        if(started) {
+            const timer = setInterval(() => dispatch({type: 'tick'}), 1000)
+            dispatch({
+                type: 'setTimer',
+                timer
+            })
+        }
+    }, [started])
 
     return (
         <context.Provider value={{
             state,
             actions
         }}>
+            
             {children}
         </context.Provider>
     )
