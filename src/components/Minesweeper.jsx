@@ -10,10 +10,11 @@ const useStyles = makeStyles({
         width: 800,
         margin: '0 auto',
         gridTemplateColumns: "repeat(2, auto) 200px",
-        gridTemplateRows: "auto auto 70px auto",
+        gridTemplateRows: "20px auto auto 50px auto",
         gap: 20,
         textAlign: 'center',
         gridTemplateAreas:`
+        ". . ."
         ". header ."
         ". options restart"
         "total available time"
