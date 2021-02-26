@@ -55,20 +55,9 @@ const Minesweeper = () => {
     const { incrementSize, decrementSize, initializeMinesField } = actions
     useEffect(initializeMinesField, [initializeMinesField])
     const classes = useStyles()
-    const { size, mines, marked, time, won, gameOver, started } = state
+    const { size, mines, marked, time, won, started } = state
     return (
         <>
-            <Dialog open={gameOver}>
-                <DialogTitle>Game Over</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                    Oops, You stepped on a mine. Try again.
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button variant="outlined" color="primary" onClick={initializeMinesField}>Try Again</Button>
-                </DialogActions>
-            </Dialog>
             <Dialog open={won}>
                 <DialogTitle>You Won</DialogTitle>
                 <DialogContent>

@@ -1,3 +1,12 @@
+class ObjectSet extends Set{
+    add(elem){
+      return super.add(typeof elem === 'object' ? JSON.stringify(elem) : elem);
+    }
+    has(elem){
+      return super.has(typeof elem === 'object' ? JSON.stringify(elem) : elem);
+    }
+  }
+
 
 export const generateGrid = (gridSize, mines) => {
     const grid = []
@@ -63,68 +72,48 @@ const generateRandomLocation = gridSize => [
 
 
 export const expandMinesBoard = (minesboard, gridSize, x, y) => {
+    let set = new ObjectSet()
+    set.add([x, y])
     minesboard[x][y].value = 0
     minesboard[x][y].shown = true
     
-    expandMinesBoardUtil(minesboard, gridSize, x + 1, y, x, y)
-    expandMinesBoardUtil(minesboard, gridSize, x + 1, y - 1, x, y)
-    expandMinesBoardUtil(minesboard, gridSize, x + 1, y + 1, x, y)
-    expandMinesBoardUtil(minesboard, gridSize, x, y - 1, x, y)
-    expandMinesBoardUtil(minesboard, gridSize, x, y + 1, x, y)
-    expandMinesBoardUtil(minesboard, gridSize, x - 1, y, x, y)
-    expandMinesBoardUtil(minesboard, gridSize, x - 1, y - 1, x, y)
-    expandMinesBoardUtil(minesboard, gridSize, x - 1, y + 1, x, y)
+    expandMinesBoardUtil(minesboard, gridSize, x + 1, y - 1, set)
+    expandMinesBoardUtil(minesboard, gridSize, x + 1, y, set)
+    expandMinesBoardUtil(minesboard, gridSize, x + 1, y + 1, set)
+    expandMinesBoardUtil(minesboard, gridSize, x - 1, y - 1, set)
+    expandMinesBoardUtil(minesboard, gridSize, x - 1, y, set)
+    expandMinesBoardUtil(minesboard, gridSize, x - 1, y + 1, set)
+    expandMinesBoardUtil(minesboard, gridSize, x, y - 1, set)
+    expandMinesBoardUtil(minesboard, gridSize, x, y + 1, set)
 
     return Array.from(minesboard)
 
 }
 
-const expandMinesBoardUtil = (minesboard, gridSize, x, y, px, py) => {
+const expandMinesBoardUtil = (minesboard, gridSize, x, y, set) => {
     if(x < 0 || x >= gridSize || y < 0 || y >= gridSize) {
         return
     }
 
-    if(minesboard[x][y].value === 0) {
+    if(set.has([x, y])) {
         return;
     }
+
+    set.add([x, y])
 
     const adjacentMines = countAdjacentMines(minesboard, gridSize, x, y)
     minesboard[x][y].value = adjacentMines
     minesboard[x][y].shown = true
 
     if(minesboard[x][y].value === 0) {
-        if(!(px === x + 1 && py === y - 1)) {
-            expandMinesBoardUtil(minesboard, gridSize, x + 1, y - 1, x, y)
-        }
-        
-        if(!(px === x + 1 && py === y)) {
-            expandMinesBoardUtil(minesboard, gridSize, x + 1, y, x, y)
-        }
-
-        if(!(px === x + 1 && py === y + 1)) {
-            expandMinesBoardUtil(minesboard, gridSize, x + 1, y + 1, x, y)
-        }
-
-        if(!(px === x - 1 && py === y - 1)) {
-            expandMinesBoardUtil(minesboard, gridSize, x - 1, y - 1, x, y)
-        }
-
-        if(!(px === x - 1 && py === y)) {
-            expandMinesBoardUtil(minesboard, gridSize, x - 1, y, x, y)
-        }
-
-        if(!(px === x - 1 && py === y - 1)) {
-            expandMinesBoardUtil(minesboard, gridSize, x - 1, y - 1, x, y)
-        }
-
-        if(!(px === x && py === y - 1)) {
-            expandMinesBoardUtil(minesboard, gridSize, x, y - 1, x, y)
-        }
-
-        if(!(px === x && py === y + 1)) {
-            expandMinesBoardUtil(minesboard, gridSize, x, y + 1, x, y)
-        }
-
+        expandMinesBoardUtil(minesboard, gridSize, x + 1, y - 1, set)
+        expandMinesBoardUtil(minesboard, gridSize, x + 1, y, set)
+        expandMinesBoardUtil(minesboard, gridSize, x + 1, y + 1, set)
+        expandMinesBoardUtil(minesboard, gridSize, x - 1, y - 1, set)
+        expandMinesBoardUtil(minesboard, gridSize, x - 1, y, set)
+        expandMinesBoardUtil(minesboard, gridSize, x - 1, y + 1, set)
+        expandMinesBoardUtil(minesboard, gridSize, x, y - 1, set)
+        expandMinesBoardUtil(minesboard, gridSize, x, y + 1, set)
     }
     return;
 }

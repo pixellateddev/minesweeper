@@ -2,8 +2,8 @@ import { makeStyles, Typography } from "@material-ui/core"
 import { useContext } from "react"
 import context from "../context"
 
-const getColor = ({cell, isGameOver}) => {
-    if(cell.isMine && isGameOver) {
+const getColor = ({cell, gameOver}) => {
+    if(cell.isMine && gameOver) {
         return '#ff9595'
     }
     if(cell.isMarked) {
@@ -26,8 +26,8 @@ const useStyles = makeStyles({
 
 const Cell = ({cell, clearField, markField}) => {
     const { state } = useContext(context)
-    const { isGameOver } = state
-    const classes = useStyles({cell, isGameOver})
+    const { gameOver } = state
+    const classes = useStyles({cell, gameOver})
 
 
     const mark = (e) => {
@@ -35,7 +35,7 @@ const Cell = ({cell, clearField, markField}) => {
         markField()
     }
     const showValue = () => {
-        if(isGameOver) {
+        if(gameOver) {
             if(cell.isMine) {
                 return '🔴'
             }

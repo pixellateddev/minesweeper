@@ -17,7 +17,6 @@ const initialState = {
 }
 
 const reducer = (state, action) => {
-    console.log(action)
     switch(action.type) {
         case "initialize":
             clearInterval(state.timer)
@@ -32,15 +31,11 @@ const reducer = (state, action) => {
             return {
                 ...state,
                 size: state.size + 1,
-                mines: getMinesCount(state.size + 1),
-                minesboard: generateGrid(state.size + 1, getMinesCount(state.size + 1))
             }
         case "decrementSize":
             return {
                 ...state,
                 size: state.size - 1,
-                mines: getMinesCount(state.size - 1),
-                minesboard: generateGrid(state.size - 1, getMinesCount(state.size - 1))
             }
 
         case "updateBoard":
@@ -149,6 +144,10 @@ export const ContextProvider = ({children}) => {
             })
         }
     }
+
+    useEffect(() => {
+        dispatch({type: 'initialize'})
+    }, [size])
 
     useEffect(() => {
         if(actualMarked === mines) {
