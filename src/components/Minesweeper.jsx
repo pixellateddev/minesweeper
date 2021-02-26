@@ -55,7 +55,7 @@ const Minesweeper = () => {
     const { incrementSize, decrementSize, initializeMinesField } = actions
     useEffect(initializeMinesField, [initializeMinesField])
     const classes = useStyles()
-    const { size, mines, marked, time, won, gameOver } = state
+    const { size, mines, marked, time, won, gameOver, started } = state
     return (
         <>
             <Dialog open={gameOver}>
@@ -103,7 +103,7 @@ const Minesweeper = () => {
                 <Typography className={classes.total}>Total Mines: {mines}</Typography>
                 <Typography className={classes.available}>Available Mines: {mines - marked}</Typography>
                 <Typography className={classes.time}>
-                    {time ? formatTime(time) : 'Click on tile start timer'}
+                    {started ? formatTime(time) : 'Click on tile start timer'}
                 </Typography>
                 <MinesBoard/>
             </div>

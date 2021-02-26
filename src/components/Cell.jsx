@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core"
+import { makeStyles, Typography } from "@material-ui/core"
 import { useContext } from "react"
 import context from "../context"
 
@@ -19,7 +19,7 @@ const useStyles = makeStyles({
     cell: {
         height: 25,
         width: 25,
-        border: '1px solid gray',
+        border: '1px solid gray',   
         backgroundColor: getColor
     },
 })
@@ -37,11 +37,11 @@ const Cell = ({cell, clearField, markField}) => {
     const showValue = () => {
         if(isGameOver) {
             if(cell.isMine) {
-                return '*'
+                return '🔴'
             }
         }
         if(cell.isMarked) {
-            return '?'
+            return '🚩'
         }
         if(cell.value === 0) {
             return ''
@@ -51,7 +51,7 @@ const Cell = ({cell, clearField, markField}) => {
 
     return (
         <div className={classes.cell} onClick={clearField} onContextMenu={mark}>
-            {showValue()}
+            <Typography>{showValue()}</Typography>
         </div>
     )
 }

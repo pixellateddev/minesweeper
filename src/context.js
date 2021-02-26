@@ -17,6 +17,7 @@ const initialState = {
 }
 
 const reducer = (state, action) => {
+    console.log(action)
     switch(action.type) {
         case "initialize":
             clearInterval(state.timer)
@@ -59,7 +60,7 @@ const reducer = (state, action) => {
             clearInterval(state.timer)
             return {
                 ...state,
-                isGameOver: true
+                gameOver: true
             }
         
         case 'won':
@@ -112,14 +113,16 @@ export const ContextProvider = ({children}) => {
             if(minesboard[x][y].shown || isGameOver || won) {
                 return;
             }
-            if(!started) {
-                dispatch({type: 'started'})
-            }
+
             if(isMine(minesboard, size, x, y)) {
                 dispatch({type: 'gameOver'})
                 return;
             }
 
+            if(!started) {
+                dispatch({type: 'started'})
+            }
+            
             dispatch({
                 type: 'updateBoard',
                 minesboard: clearField(minesboard, size, x, y)

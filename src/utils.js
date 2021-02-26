@@ -183,6 +183,10 @@ export const getMinesCount = size => Math.floor(size * size * 0.15)
 
 
 export const formatTime = time => {
+    if(!time) {
+        return '0 Second'
+    }
+
     const minutes = Math.floor(time / 60)
     const seconds = time % 60
     let minutesText = ''
