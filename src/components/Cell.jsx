@@ -10,7 +10,7 @@ const getColor = ({cell, gameOver}) => {
         return '#f7bba1'
     }
     if(cell.shown) {
-        return '#e7e6f7'
+        return '#f3f2fa'
     }
     return '#dbdaf7'
 }
@@ -36,8 +36,11 @@ const Cell = ({cell, clearField, markField}) => {
     }
     const showValue = () => {
         if(gameOver) {
-            if(cell.isMine) {
-                return '🔴'
+            if(cell.isMine && cell.isMarked) {
+                return '🚩'
+            }
+            else if(cell.isMine) {
+                return '🧨'
             }
         }
         if(cell.isMarked) {
@@ -51,7 +54,7 @@ const Cell = ({cell, clearField, markField}) => {
 
     return (
         <div className={classes.cell} onClick={clearField} onContextMenu={mark}>
-            <Typography>{showValue()}</Typography>
+            <Typography variant="caption">{showValue()}</Typography>
         </div>
     )
 }

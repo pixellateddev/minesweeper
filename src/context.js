@@ -96,7 +96,7 @@ export const ContextProvider = ({children}) => {
 
 
     const [state, dispatch] = useReducer(reducer, initialState)
-    const { minesboard, size, started, isGameOver, marked, actualMarked, mines, won } = state
+    const { minesboard, size, started, gameOver, marked, actualMarked, mines, won } = state
     const actions = {
         incrementSize: () => dispatch({type: 'incrementSize'}),
 
@@ -105,7 +105,7 @@ export const ContextProvider = ({children}) => {
         initializeMinesField: useCallback(() => dispatch({type: 'initialize'}), []),
 
         clearField: (x, y) => {
-            if(minesboard[x][y].shown || isGameOver || won) {
+            if(minesboard[x][y].shown || gameOver || won) {
                 return;
             }
 
@@ -125,7 +125,7 @@ export const ContextProvider = ({children}) => {
         },
 
         markField: (x, y) => {
-            if(minesboard[x][y].shown || isGameOver || won) {
+            if(minesboard[x][y].shown || gameOver || won) {
                 return;
             }
             if(!started) {
